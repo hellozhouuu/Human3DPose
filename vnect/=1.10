@@ -1,0 +1,25 @@
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /home/zml/miniconda3/envs/alphapose
+
+  added / updated specs:
+    - tensorflow
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    certifi-2020.11.8          |   py36h06a4308_0         147 KB  defaults
+    ------------------------------------------------------------
+                                           Total:         147 KB
+
+The following packages will be UPDATED:
+
+  certifi            pkgs/main/noarch::certifi-2020.6.20-p~ --> pkgs/main/linux-64::certifi-2020.11.8-py36h06a4308_0
+
+
+Proceed ([y]/n)? 

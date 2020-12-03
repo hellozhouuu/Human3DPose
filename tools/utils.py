@@ -1,6 +1,7 @@
 #@cvhadessun
 import numpy as np
 import cv2
+import tensorflow as tf
 
 def img_scale(img, scale):
     """
@@ -96,15 +97,20 @@ def gen_input_batch(img_input, box_size, scales):
 
 
 def extract_3d_joints(heatmap_xy, heatmap_xz, heatmap_yz,param):
-    x_hat = [i for i in range(param['output_hm_shape'][0])]
-    y_hat = [i for i in range(param['output_hm_shape'][1])]
-    z_hat = [i for i in range(param['output_hm_shape'][2])]
-    # joint_3d = np.zeros((self.joints_sum,3))
-    joint_3d = np.zeros((param['num_kps'],3))
-    for i in range(param['num_kps']):
-        joint_3d[i,0] = np.mean(heatmap_xy.dot(x_hat))
-        joint_3d[i,1] = np.mean(heatmap_xy.T.dot(y_hat))
-        joint_3d[i,2] = (np.mean(heatmap_yz.T.dot(z_hat))+np.mean(heatmap_xz.T.dot(z_hat)))/2
+    heatmap_xy = tf.squeeze(tf.transpose(heatmap_xy,perm=[0,3,1,2]))
+    heatmap_xy_t = tf.transpose(heatmap_xy,perm=[0,2,1])
+    heatmap_xz = tf.squeeze(tf.transpose(heatmap_xz,perm=[0,3,1,2]))
+    heatmap_yz = tf.squeeze(tf.transpose(heatmap_yz,perm=[0,3,1,2]))
+    x_hat = tf.to_float(tf.range(0, param['output_hm_shape'][0]))
+    y_hat = tf.to_float(tf.range(0, param['output_hm_shape'][1]))
+    z_hat = tf.to_float(tf.range(0, param['output_hm_shape'][2]))
+
+    joint_3d_x = tf.reduce_mean(tf.tensordot(heatmap_xy,x_hat,axes=1),axis=1)
+    joint_3d_y = tf.reduce_mean(tf.tensordot(heatmap_xy_t,y_hat,axes=1),axis=1)
+    joint_3d_z = (tf.reduce_mean(tf.tensordot(heatmap_yz,z_hat,axes=1),axis=1) +  tf.reduce_mean(tf.tensordot(heatmap_xz,z_hat,axes=1),axis=1))/2
+    joint_3d_x, joint_3d_y , joint_3d_z = tf.expand_dims(joint_3d_x,1), tf.expand_dims(joint_3d_y,1), tf.expand_dims(joint_3d_z,1)
+    joint_3d = tf.concat([joint_3d_x,joint_3d_y,joint_3d_z],axis=1)
+    print(joint_3d.shape)
     return joint_3d
 
 def decode_pose(xm,ym,zm,param):
@@ -117,7 +123,7 @@ def decode_pose(xm,ym,zm,param):
     # joints_3d_cam = np.zeros((param['num_kps'],3))
 
     # for i in range(param['num_kps']):
-    #     # 
-    #     joints_3d_cam[i] = joints_3d[i] / param['output_hm_shape'][0] * param['width'] * scale
+        # 
+    joints_3d_cam = joints_3d / param['output_hm_shape'][0] * param['width'] * scale
     
-    return joints_3d
+    return joints_3d_cam

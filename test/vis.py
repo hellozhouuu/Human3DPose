@@ -72,7 +72,7 @@ def vis_mesh(img, mesh_vertex, alpha=0.5):
     # Blend the keypoints.
     return cv2.addWeighted(img, 1.0 - alpha, mask, alpha, 0)
 
-def vis_3d_skeleton(kpt_3d, kpt_3d_vis, kps_lines, filename=None):
+def vis_3d_skeleton(kpt_3d, kps_lines, filename=None):
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -89,12 +89,35 @@ def vis_3d_skeleton(kpt_3d, kpt_3d_vis, kps_lines, filename=None):
         y = np.array([kpt_3d[i1,1], kpt_3d[i2,1]])
         z = np.array([kpt_3d[i1,2], kpt_3d[i2,2]])
 
-        if kpt_3d_vis[i1,0] > 0 and kpt_3d_vis[i2,0] > 0:
-            ax.plot(x, z, -y, c=colors[l], linewidth=2)
-        if kpt_3d_vis[i1,0] > 0:
-            ax.scatter(kpt_3d[i1,0], kpt_3d[i1,2], -kpt_3d[i1,1], c=colors[l], marker='o')
-        if kpt_3d_vis[i2,0] > 0:
-            ax.scatter(kpt_3d[i2,0], kpt_3d[i2,2], -kpt_3d[i2,1], c=colors[l], marker='o')
+        ax.plot(x, z, -y, c=colors[l], linewidth=2)
+        ax.scatter(kpt_3d[i1,0], kpt_3d[i1,2], -kpt_3d[i1,1], c=colors[l], marker='o')
+        ax.scatter(kpt_3d[i2,0], kpt_3d[i2,2], -kpt_3d[i2,1], c=colors[l], marker='o')
+
+    if filename is None:
+        ax.set_title('3D vis')
+    else:
+        ax.set_title(filename)
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Z Label')
+    ax.set_zlabel('Y Label')
+    ax.legend()
+
+    plt.show()
+    cv2.waitKey(0)
+
+def vis_3d_points(kpt_3d, filename=None):
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Convert from plt 0-1 RGBA colors to 0-255 BGR colors for opencv.
+    cmap = plt.get_cmap('rainbow')
+    colors = [cmap(i) for i in np.linspace(0, 1, len(kpt_3d) + 2)]
+    colors = [np.array((c[2], c[1], c[0])) for c in colors]
+    ax.scatter(kpt_3d[:,0],kpt_3d[:,1],kpt_3d[:,2],c='red',marker='o', s=10)
+
+
 
     if filename is None:
         ax.set_title('3D vis')

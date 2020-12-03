@@ -4,12 +4,13 @@
 
 import os
 import sys
-sys.path.extend([os.path.dirname(os.path.abspath(__file__))])
+sys.path.append('..')
+# sys.path.extend([os.path.dirname(os.path.abspath(__file__))])
 import cv2
 import time
 import numpy as np
 import tensorflow as tf
-import utils
+import tools.utils as utils
 # from OneEuroFilter import OneEuroFilter
 
 
@@ -32,13 +33,19 @@ class VNectEstimator:
         self.scales = [1, 0.85, 0.7]
         # load pretrained VNect model
         self.sess = tf.Session()
-        if os.getcwd().endswith('src'):
-            saver = tf.train.import_meta_graph('../models/tf_model/vnect_tf.meta')
-            saver.restore(self.sess, tf.train.latest_checkpoint('../models/tf_model/'))
+        if os.getcwd().endswith('test'):
+            saver = tf.train.import_meta_graph('../ckpt_v1/model.ckpt-14126.meta')
+            saver.restore(self.sess, tf.train.latest_checkpoint('../ckpt_v1/'))
         else:
-            saver = tf.train.import_meta_graph('./models/tf_model/vnect_tf.meta')
+            saver = tf.train.import_meta_graph('./ckpt_v1/tf_model/vnect_tf.meta')
             saver.restore(self.sess, tf.train.latest_checkpoint('./models/tf_model/'))
         graph = tf.get_default_graph()
+        
+        tensor_name_list = [tensor.name for tensor in tf.get_default_graph().as_graph_def().node]
+        for tensor_name in tensor_name_list:
+            if not 'save' in tensor_name:
+                print(tensor_name)
+
         self.input_crops = graph.get_tensor_by_name('Placeholder:0')
         self.heatmap_xy = graph.get_tensor_by_name('split_2:0')
         self.heatmap_xz = graph.get_tensor_by_name('split_2:1')

@@ -30,7 +30,7 @@ train_config['save_models']     = 100
 train_config['input_scale']     = 8
 
 train_config['finetuning'] = False
-train_config['checkpoint_path'] = '/home/swh/exercise_work/Vnect_project/ckpt_v2'
+train_config['checkpoint_path'] = '/home/swh/exercise_work/Vnect_project/ckpt_v1'
 train_config['vis_path']='/home/swh/exercise_work/Vnect_project/results'
 train_config['vis_input']=False
 
@@ -39,5 +39,5 @@ train_config['test_batch_size']=1
 train_config['test_subjects']=[9]
 train_config['test_subsampling_ratio']=64  # subsampling dataset for training
 train_config['scales']=[1]
-train_config['test_model']='/home/swh/exercise_work/ckpt/model.ckpt-21756'
-train_config['img_path']='/home/swh/exercise_work/Vnect_project/test/test.jpg'
+train_config['test_model']='/home/swh/exercise_work/Vnect_project/ckpt_v1/model.ckpt-14126'
+train_config['img_path']='/home/zml/workspace_2013/Human3DPose/test/'
